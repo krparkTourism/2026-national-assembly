@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+<meta name="theme-color" content="#0b3d91" />
+<title>한국문화관광연구원 · 2026 국정감사 대시보드</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root{
+    --brand:#0b3d91;
+    --brand-2:#1660d6;
+    --brand-soft:#e8efff;
+    --accent:#e11d48;
+    --accent-2:#f59e0b;
+    --ok:#059669;
+    --bg:#f5f7fb;
+    --card:#ffffff;
+    --ink:#0f172a;
+    --ink-2:#334155;
+    --ink-3:#64748b;
+    --line:#e5e9f2;
+    --chip:#eef2ff;
+    --shadow:0 4px 14px rgba(15,23,42,.06), 0 1px 3px rgba(15,23,42,.04);
+    --radius:14px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:'Noto Sans KR',system-ui,-apple-system,'Apple SD Gothic Neo',sans-serif;line-height:1.55;-webkit-text-size-adjust:100%;}
+  a{color:var(--brand-2);text-decoration:none}
+  a:hover{text-decoration:underline}
+
+  /* ============ Header ============ */
+  header.top{
+    position:sticky;top:0;z-index:50;
+    background:linear-gradient(135deg,#0b3d91 0%,#1660d6 100%);
+    color:#fff;
+    box-shadow:0 2px 8px rgba(11,61,145,.25);
+  }
+  .top-inner{max-width:1200px;margin:0 auto;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .brand{display:flex;align-items:center;gap:10px;min-width:0}
+  .brand-mark{
+    width:38px;height:38px;flex:0 0 38px;border-radius:10px;
+    background:rgba(255,255,255,.15);
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;letter-spacing:.3px;
+    border:1px solid rgba(255,255,255,.25);
+  }
+  .brand-txt{min-width:0}
+  .brand-txt .t1{font-size:12px;opacity:.85;letter-spacing:.4px}
+  .brand-txt .t2{font-weight:800;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .top-meta{font-size:12px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);padding:6px 10px;border-radius:999px;white-space:nowrap}
+  .top-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+  .btn-pdf{
+    display:inline-flex;align-items:center;gap:6px;
+    background:#fff;color:var(--brand);
+    font-family:inherit;font-size:12.5px;font-weight:700;
+    padding:8px 12px;border-radius:999px;
+    border:1px solid rgba(255,255,255,.35);
+    text-decoration:none;cursor:pointer;
+    transition:transform .12s ease, box-shadow .12s ease, background .12s ease;
+    box-shadow:0 2px 6px rgba(0,0,0,.15);
+    white-space:nowrap;
+  }
+  .btn-pdf:hover{background:#f8fafc;transform:translateY(-1px);text-decoration:none;box-shadow:0 4px 10px rgba(0,0,0,.2)}
+  .btn-pdf:active{transform:translateY(0)}
+  .btn-pdf svg{width:14px;height:14px;flex-shrink:0}
+  .btn-pdf .lbl-full{display:inline}
+  .btn-pdf .lbl-short{display:none}
+  @media(max-width:520px){
+    .btn-pdf{padding:7px 10px;font-size:12px}
+    .btn-pdf .lbl-full{display:none}
+    .btn-pdf .lbl-short{display:inline}
+    .top-meta{display:none}
+  }
+
+  /* ============ Nav Tabs ============ */
+  nav.tabs{
+    background:#fff;border-bottom:1px solid var(--line);
+    position:sticky;top:66px;z-index:40;
+  }
+  .tabs-inner{max-width:1200px;margin:0 auto;padding:0 8px;display:flex;overflow-x:auto;scrollbar-width:none}
+  .tabs-inner::-webkit-scrollbar{display:none}
+  .tab{
+    flex:0 0 auto;padding:14px 14px;font-size:14px;font-weight:600;color:var(--ink-3);
+    border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap;transition:all .15s;
+    background:none;border-top:none;border-left:none;border-right:none;
+    font-family:inherit;
+  }
+  .tab:hover{color:var(--brand)}
+  .tab.active{color:var(--brand);border-bottom-color:var(--brand)}
+
+  /* ============ Layout ============ */
+  main{max-width:1200px;margin:0 auto;padding:16px}
+  section.panel{display:none;animation:fade .25s ease}
+  section.panel.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+  h2.sec-title{
+    font-size:18px;font-weight:800;margin:6px 0 12px;color:var(--ink);
+    display:flex;align-items:center;gap:8px;
+  }
+  h2.sec-title .num{
+    display:inline-flex;width:26px;height:26px;border-radius:8px;background:var(--brand);color:#fff;
+    align-items:center;justify-content:center;font-size:13px;font-weight:800;
+  }
+  h3.sub{font-size:15px;font-weight:700;margin:18px 0 10px;color:var(--ink);border-left:4px solid var(--brand);padding-left:8px}
+
+  /* ============ KPI grid ============ */
+  .kpi-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}
+  @media(min-width:640px){.kpi-grid{grid-template-columns:repeat(4,1fr);gap:12px}}
+  .kpi{
+    background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);
+    border:1px solid var(--line);position:relative;overflow:hidden;
+  }
+  .kpi:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--brand)}
+  .kpi.k2:before{background:var(--accent-2)}
+  .kpi.k3:before{background:var(--ok)}
+  .kpi.k4:before{background:var(--accent)}
+  .kpi .lbl{font-size:11.5px;color:var(--ink-3);font-weight:500}
+  .kpi .val{font-size:22px;font-weight:800;margin-top:4px;color:var(--ink);letter-spacing:-.3px}
+  .kpi .sub{font-size:11px;color:var(--ink-3);margin-top:2px}
+
+  /* ============ Card ============ */
+  .card{background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);border:1px solid var(--line);margin-bottom:12px}
+  .card h4{margin:0 0 8px;font-size:14.5px;font-weight:700}
+  .card p{margin:6px 0;font-size:13.5px;color:var(--ink-2)}
+  .grid-2{display:grid;grid-template-columns:1fr;gap:12px}
+  @media(min-width:768px){.grid-2{grid-template-columns:1fr 1fr}}
+
+  /* ============ Table (responsive) ============ */
+  .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px;border:1px solid var(--line);background:#fff}
+  table.dt{width:100%;border-collapse:collapse;min-width:520px;font-size:13px}
+  table.dt th,table.dt td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+  table.dt th{background:var(--brand-soft);color:var(--brand);font-weight:700;font-size:12px;letter-spacing:.2px;position:sticky;top:0}
+  table.dt td.num{text-align:right;font-variant-numeric:tabular-nums}
+  table.dt tr:last-child td{border-bottom:none}
+  table.dt tr.tot td{background:#f8fafc;font-weight:700}
+  table.dt tr:hover td{background:#fafbff}
+  .caption{font-size:11.5px;color:var(--ink-3);margin:6px 4px 0}
+
+  /* ============ Chart ============ */
+  .chart-box{position:relative;height:260px;margin-top:6px}
+  @media(min-width:768px){.chart-box{height:300px}}
+  .chart-box.tall{height:320px}
+  @media(min-width:768px){.chart-box.tall{height:380px}}
+
+  /* ============ Pills / chips ============ */
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+  .chip{display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;font-size:11.5px;font-weight:600;background:var(--chip);color:var(--brand-2);border:1px solid #dee5ff}
+  .chip.warn{background:#fff5eb;color:#b45309;border-color:#fed7aa}
+  .chip.danger{background:#fef2f2;color:#b91c1c;border-color:#fecaca}
+  .chip.ok{background:#ecfdf5;color:#047857;border-color:#a7f3d0}
+
+  /* ============ Org chart ============ */
+  .org{display:grid;gap:12px}
+  .org-row{display:grid;gap:10px;grid-template-columns:1fr;justify-items:center}
+  @media(min-width:768px){.org-row.r-hq{grid-template-columns:repeat(5,1fr);align-items:start}}
+  .org-node{
+    background:#fff;border:2px solid var(--brand);border-radius:12px;
+    padding:10px 12px;text-align:center;font-size:12.5px;font-weight:700;color:var(--brand);
+    width:100%;box-shadow:var(--shadow);
+  }
+  .org-node.top{background:var(--brand);color:#fff}
+  .org-node.audit{border-color:var(--accent-2);color:#b45309}
+  .org-node small{display:block;font-size:11px;color:var(--ink-3);font-weight:500;margin-top:2px}
+  /* headquarters column: 본부 + 하위 실/팀 스택 */
+  .hq-col{display:flex;flex-direction:column;gap:6px;width:100%}
+  .hq-col .sub{
+    background:var(--brand-soft);border:1px solid #cfdcff;border-radius:10px;
+    padding:8px 10px;font-size:11.5px;color:var(--brand);font-weight:700;text-align:center;
+  }
+  .hq-col .sub small{display:block;font-size:10.5px;color:var(--ink-3);font-weight:500;margin-top:2px}
+  /* 단(團) : 문화영향평가단 · 데이터분석단 — 별도 색상 */
+  .hq-col .sub.dan{
+    background:#fff5eb;border:1px solid #fcd9a8;color:#b45309;
+  }
+  .hq-col .sub.dan small{color:#a06216}
+  .hq-col .team{
+    background:#fff;border:1px dashed #b6c4ea;border-radius:8px;
+    padding:5px 8px;font-size:10.5px;color:var(--ink-2);font-weight:600;text-align:center;
+    margin-left:12px;position:relative;
+  }
+  .hq-col .team:before{
+    content:"";position:absolute;left:-10px;top:50%;width:8px;height:1px;background:#b6c4ea;
+  }
+  .team-wrap{display:flex;flex-direction:column;gap:4px;padding:2px 0 4px}
+
+  /* ============ Timeline ============ */
+  .timeline{position:relative;padding-left:26px}
+  .timeline:before{content:"";position:absolute;left:9px;top:6px;bottom:6px;width:2px;background:var(--line)}
+  .tl-item{position:relative;padding:6px 0 14px}
+  .tl-item:before{
+    content:"";position:absolute;left:-22px;top:10px;width:12px;height:12px;border-radius:50%;
+    background:var(--brand);border:3px solid #fff;box-shadow:0 0 0 1px var(--brand);
+  }
+  .tl-title{font-weight:700;font-size:13.5px;color:var(--ink)}
+  .tl-desc{font-size:12.5px;color:var(--ink-3)}
+
+  /* ============ Issue cards ============ */
+  .issue{
+    border-left:5px solid var(--accent);background:#fff;
+    border-radius:12px;padding:14px;box-shadow:var(--shadow);margin-bottom:12px;
+  }
+  .issue.i2{border-left-color:var(--accent-2)}
+  .issue.i3{border-left-color:var(--brand-2)}
+  .issue h4{margin:0 0 6px;font-size:15px;display:flex;align-items:center;gap:8px}
+  .issue h4 .badge{
+    display:inline-flex;padding:2px 8px;border-radius:6px;background:var(--accent);color:#fff;
+    font-size:11px;font-weight:700;
+  }
+  .issue.i2 h4 .badge{background:var(--accent-2)}
+  .issue.i3 h4 .badge{background:var(--brand-2)}
+  .issue ul{margin:6px 0 0;padding-left:20px;font-size:13px;color:var(--ink-2)}
+  .issue li{margin-bottom:4px}
+
+  /* ============ Search & filter ============ */
+  .search-bar{
+    display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;
+  }
+  .search-bar input{
+    flex:1;min-width:160px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;
+    font-size:14px;font-family:inherit;background:#fff;
+  }
+  .search-bar input:focus{outline:2px solid var(--brand);outline-offset:1px;border-color:var(--brand)}
+  .filter-chips{display:flex;gap:6px;flex-wrap:wrap}
+  .fchip{
+    padding:8px 14px;border-radius:999px;font-size:13px;font-weight:600;cursor:pointer;
+    background:#fff;border:1px solid var(--line);color:var(--ink-2);transition:all .15s;
+    font-family:inherit;
+  }
+  .fchip.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+
+  /* ============ Footer ============ */
+  footer{max-width:1200px;margin:20px auto 40px;padding:20px 16px;text-align:center;font-size:12px;color:var(--ink-3)}
+  footer .fa{font-weight:700;color:var(--ink-2);margin-bottom:4px}
+  footer .foot-link{color:var(--ink-2);text-decoration:none;border-bottom:1px dashed transparent;transition:all .15s}
+  footer .foot-link:hover{color:var(--brand);border-bottom-color:var(--brand);text-decoration:none}
+
+  /* small screens: compact top header */
+  @media(max-width:520px){
+    .top-inner{padding:10px 12px}
+    .brand-txt .t2{font-size:14px}
+    .top-meta{font-size:11px;padding:4px 8px}
+    nav.tabs{top:58px}
+    main{padding:12px}
+    .kpi .val{font-size:19px}
+    h2.sec-title{font-size:16px}
+  }
+
+  /* highlight */
+  .hi{color:var(--brand);font-weight:700}
+  .down{color:var(--accent);font-weight:700}
+  .up{color:var(--ok);font-weight:700}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <div class="brand">
+      <div class="brand-mark">KCTI</div>
+      <div class="brand-txt">
+        <div class="t1">2026 국정감사 대비</div>
+        <div class="t2">한국문화관광연구원</div>
+      </div>
+    </div>
+    <div class="top-actions">
+      <div class="top-meta">2026.10 기준</div>
+      <a class="btn-pdf" href="KCTI_2026_국정감사.pdf" download="한국문화관광연구원_2026_국정감사.pdf" title="원문 PDF 다운로드" aria-label="원문 PDF 다운로드">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        <span class="lbl-full">PDF 다운로드</span>
+        <span class="lbl-short">PDF</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs" role="tablist">
+  <div class="tabs-inner">
+    <button class="tab active" data-t="overview">개요</button>
+    <button class="tab" data-t="org">조직·정원</button>
+    <button class="tab" data-t="budget">예산</button>
+    <button class="tab" data-t="research">연구·사업</button>
+    <button class="tab" data-t="stats">통계·평가</button>
+    <button class="tab" data-t="issues">주요 현안</button>
+    <button class="tab" data-t="projects">2026 과제</button>
+    <button class="tab" data-t="comp">타 기관 비교</button>
+  </div>
+</nav>
+
+<main>
+
+<!-- ============ OVERVIEW ============ -->
+<section id="overview" class="panel active">
+  <h2 class="sec-title"><span class="num">Ⅰ</span> 연구원 현황</h2>
+
+  <div class="kpi-grid">
+    <div class="kpi k1"><div class="lbl">정원 (임피제 4명 포함)</div><div class="val">143명</div><div class="sub">현원 136명 (’26.8.21)</div></div>
+    <div class="kpi k2"><div class="lbl">2026 총예산</div><div class="val">295.96억</div><div class="sub">전년 대비 +1.7%</div></div>
+    <div class="kpi k3"><div class="lbl">기본연구</div><div class="val">39건</div><div class="sub">기초6·정책24·수시9</div></div>
+    <div class="kpi k4"><div class="lbl">국가승인통계</div><div class="val">9종</div><div class="sub">문체부 8 + 자체 1</div></div>
+  </div>
+
+  <div class="card">
+    <h4>설립근거 및 주요임무</h4>
+    <p><span class="chip">설립근거</span> 「문화기본법」 제11조의2 (본조신설 2016.5.)</p>
+    <p><span class="chip">주요임무</span> 조사·평가·연구, 교류·연구협력, 통계생산·분석</p>
+    <div class="chips">
+      <span class="chip">문화예술 진흥</span>
+      <span class="chip">문화산업 육성</span>
+      <span class="chip">문화관광</span>
+      <span class="chip">문화복지 환경조성</span>
+      <span class="chip">전통·생활문화 진흥</span>
+      <span class="chip">여가문화</span>
+      <span class="chip">북한 문화예술</span>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h4>연구서비스 시스템 (3종)</h4>
+      <p><b>ACKIS · 문화예술지식정보</b><br>
+        <a href="https://policydb.kcti.re.kr" target="_blank" rel="noopener">policydb.kcti.re.kr</a><br>
+        <small>정책·자원·산업·융합콘텐츠 지식정보 및 통계</small></p>
+      <p><b>TourGo · 관광지식정보</b><br>
+        <a href="https://know.tour.go.kr" target="_blank" rel="noopener">know.tour.go.kr</a><br>
+        <small>관광지식·통계, 관광자원 정보 및 체감형 콘텐츠</small></p>
+      <p><b>TDSS · 관광개발정보</b><br>
+        <a href="https://www.tdss.kr" target="_blank" rel="noopener">www.tdss.kr</a><br>
+        <small>문체부 관광자원개발 통합정보시스템</small></p>
+      <div style="margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)">
+        <div style="font-size:12.5px;font-weight:700;color:var(--brand);margin-bottom:6px">데이터 시스템 (1종)</div>
+        <p style="margin:0"><b>KCTI data</b><br>
+          <a href="https://data.kcti.re.kr" target="_blank" rel="noopener">data.kcti.re.kr</a><br>
+          <small>국내외 문화·관광·콘텐츠 데이터</small></p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h4>총예산 추이 (2021~2026)</h4>
+      <div class="chart-box"><canvas id="budgetTrend"></canvas></div>
+      <div class="caption">단위: 백만 원 · 계 = 출연금(관진금)/일반회계 + 자체수입</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ORG ============ -->
+<section id="org" class="panel">
+  <h2 class="sec-title"><span class="num">Ⅰ</span> 조직 및 정원</h2>
+
+  <div class="kpi-grid">
+    <div class="kpi k1"><div class="lbl">연구직</div><div class="val">75/70</div><div class="sub">정/현</div></div>
+    <div class="kpi k2"><div class="lbl">통계직</div><div class="val">12/11</div><div class="sub">정/현</div></div>
+    <div class="kpi k3"><div class="lbl">행정직</div><div class="val">21/21</div><div class="sub">정/현</div></div>
+    <div class="kpi k4"><div class="lbl">운영직</div><div class="val">30/29</div><div class="sub">정/현 · 별도정원 4</div></div>
+  </div>
+
+  <div class="card">
+    <h4>조직도</h4>
+    <div class="org">
+      <div class="org-row">
+        <div class="org-node top" style="max-width:260px">원장<small>President</small></div>
+      </div>
+      <div class="org-row">
+        <div class="org-node audit" style="max-width:220px">감사실 (2명)</div>
+      </div>
+      <div class="org-row r-hq">
+        <!-- 경영기획본부 -->
+        <div class="hq-col">
+          <div class="org-node">경영기획본부<small>36명</small></div>
+          <div class="sub">기획조정실<small>12명</small></div>
+          <div class="team-wrap">
+            <div class="team">연구기획팀 (6)</div>
+            <div class="team">성과확산팀 (5)</div>
+          </div>
+          <div class="sub">경영지원실<small>23명</small></div>
+          <div class="team-wrap">
+            <div class="team">인재개발팀 (8)</div>
+            <div class="team">총무회계팀 (11)</div>
+            <div class="team">정보사업팀 (3)</div>
+          </div>
+        </div>
+        <!-- 문화연구본부 -->
+        <div class="hq-col">
+          <div class="org-node">문화연구본부<small>32명</small></div>
+          <div class="sub">문화예술정책연구실<small>16명</small></div>
+          <div class="sub">문화예술가치확산연구실<small>12명</small></div>
+          <div class="sub dan">문화영향평가단<small>5명 (겸직2)</small></div>
+        </div>
+        <!-- 관광연구본부 -->
+        <div class="hq-col">
+          <div class="org-node">관광연구본부<small>36명</small></div>
+          <div class="sub">관광정책연구실<small>13명</small></div>
+          <div class="sub">관광산업연구실<small>13명</small></div>
+          <div class="sub">지역관광개발관리센터<small>11명 (겸직2)</small></div>
+        </div>
+        <!-- 콘텐츠연구본부 -->
+        <div class="hq-col">
+          <div class="org-node">콘텐츠연구본부<small>11명</small></div>
+          <div class="sub">한류경제연구센터<small>6명 (겸직2)</small></div>
+        </div>
+        <!-- 데이터정책본부 -->
+        <div class="hq-col">
+          <div class="org-node">데이터정책본부<small>18명</small></div>
+          <div class="sub">데이터전략실<small>17명</small></div>
+          <div class="sub dan">데이터분석단<small>2명 (겸직2)</small></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h4>본부별 하위 조직</h4>
+      <div class="tbl-wrap">
+        <table class="dt">
+          <thead><tr><th>본부</th><th>실 / 센터</th><th>팀</th><th class="num">인원</th></tr></thead>
+          <tbody>
+            <tr><td rowspan="7">경영기획본부<br><small style="color:var(--ink-3)">(36명)</small></td><td rowspan="3">기획조정실 (12)</td><td>-</td><td class="num">12</td></tr>
+            <tr><td>연구기획팀</td><td class="num">6</td></tr>
+            <tr><td>성과확산팀</td><td class="num">5</td></tr>
+            <tr><td rowspan="4">경영지원실 (23)</td><td>-</td><td class="num">23</td></tr>
+            <tr><td>인재개발팀</td><td class="num">8</td></tr>
+            <tr><td>총무회계팀</td><td class="num">11</td></tr>
+            <tr><td>정보사업팀</td><td class="num">3</td></tr>
+            <tr><td rowspan="3">문화연구본부<br><small style="color:var(--ink-3)">(32명)</small></td><td>문화예술정책연구실</td><td>-</td><td class="num">16</td></tr>
+            <tr><td>문화예술가치확산연구실</td><td>-</td><td class="num">12</td></tr>
+            <tr style="background:#fff7ed"><td><span style="color:#b45309;font-weight:700">문화영향평가단</span></td><td>-</td><td class="num">5 <small>(겸직2)</small></td></tr>
+            <tr><td rowspan="3">관광연구본부<br><small style="color:var(--ink-3)">(36명)</small></td><td>관광정책연구실</td><td>-</td><td class="num">13</td></tr>
+            <tr><td>관광산업연구실</td><td>-</td><td class="num">13</td></tr>
+            <tr><td>지역관광개발관리센터</td><td>-</td><td class="num">11 <small>(겸직2)</small></td></tr>
+            <tr><td>콘텐츠연구본부<br><small style="color:var(--ink-3)">(11명)</small></td><td>한류경제연구센터</td><td>-</td><td class="num">6 <small>(겸직2)</small></td></tr>
+            <tr><td rowspan="2">데이터정책본부<br><small style="color:var(--ink-3)">(18명)</small></td><td>데이터전략실</td><td>-</td><td class="num">17</td></tr>
+            <tr style="background:#fff7ed"><td><span style="color:#b45309;font-weight:700">데이터분석단</span></td><td>-</td><td class="num">2 <small>(겸직2)</small></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h4>임금피크제 대상자 추이</h4>
+      <div class="chart-box"><canvas id="peakChart"></canvas></div>
+      <div class="caption">2016.6 도입 후 4차례 개정 · 1년차 70%, 2년차 60% 조정</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h4>임금피크제 상세</h4>
+    <p><b>규정</b>: 인사규정 제47조 / 임금피크제 시행지침</p>
+    <div class="chips">
+      <span class="chip">임금 1년차 70%</span>
+      <span class="chip">임금 2년차 60%</span>
+      <span class="chip">근무시간 1년차 -2h/일</span>
+      <span class="chip">근무시간 2년차 -3h/일</span>
+      <span class="chip warn">승진·직무·보직 제한</span>
+      <span class="chip warn">성과급 3등급 적용</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BUDGET ============ -->
+<section id="budget" class="panel">
+  <h2 class="sec-title"><span class="num">Ⅰ</span> 예산 (2026)</h2>
+
+  <div class="kpi-grid">
+    <div class="kpi k1"><div class="lbl">2026 총예산</div><div class="val">29,596</div><div class="sub">백만 원 · <span class="up">+1.7%</span></div></div>
+    <div class="kpi k2"><div class="lbl">일반회계 (출연금)</div><div class="val">12,522</div><div class="sub">백만 원 · <span class="down">-0.4%</span></div></div>
+    <div class="kpi k3"><div class="lbl">자체수입</div><div class="val">15,296</div><div class="sub">백만 원 · <span class="up">+4.6%</span></div></div>
+    <div class="kpi k4"><div class="lbl">연구사업비</div><div class="val">3,003</div><div class="sub">백만 원 · <span class="down">-10.0%</span></div></div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h4>수입 예산 구성 (2026)</h4>
+      <div class="chart-box"><canvas id="incomeChart"></canvas></div>
+    </div>
+    <div class="card">
+      <h4>지출 예산 구성 (2026)</h4>
+      <div class="chart-box"><canvas id="expenseChart"></canvas></div>
+    </div>
+  </div>
+
+  <h3 class="sub">수입예산 상세</h3>
+  <div class="tbl-wrap">
+    <table class="dt">
+      <thead><tr><th>구분</th><th class="num">2025 예산</th><th class="num">비율</th><th class="num">2026 예산</th><th class="num">비율</th><th class="num">증감액</th><th class="num">증감률</th></tr></thead>
+      <tbody>
+        <tr><td>일반회계 (출연금)</td><td class="num">12,570</td><td class="num">43.2%</td><td class="num">12,522</td><td class="num">42.3%</td><td class="num down">△48</td><td class="num down">△0.4%</td></tr>
+        <tr><td>자체수입 · 수탁연구</td><td class="num">9,001</td><td class="num">30.9%</td><td class="num">8,025</td><td class="num">27.1%</td><td class="num down">△976</td><td class="num down">△10.8%</td></tr>
+        <tr><td>자체수입 · 개별출연사업</td><td class="num">5,621</td><td class="num">19.3%</td><td class="num">7,271</td><td class="num">24.6%</td><td class="num up">1,650</td><td class="num up">+29.4%</td></tr>
+        <tr><td>전년도 이월금</td><td class="num">1,473</td><td class="num">5.1%</td><td class="num">1,282</td><td class="num">4.3%</td><td class="num down">△191</td><td class="num down">△13.0%</td></tr>
+        <tr><td>연구개발적립금</td><td class="num">433</td><td class="num">1.4%</td><td class="num">496</td><td class="num">1.7%</td><td class="num up">63</td><td class="num up">+14.5%</td></tr>
+        <tr class="tot"><td>합계</td><td class="num">29,098</td><td class="num">100%</td><td class="num">29,596</td><td class="num">100%</td><td class="num up">+498</td><td class="num up">+1.7%</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="caption">단위: 백만 원</div>
+
+  <h3 class="sub">지출예산 상세 (항목별)</h3>
+  <div class="tbl-wrap">
+    <table class="dt">
+      <thead><tr><th>구분</th><th class="num">2025</th><th class="num">2026</th><th class="num">증감</th><th class="num">증감률</th></tr></thead>
+      <tbody>
+        <tr><td>연구사업비 (일반)</td><td class="num">3,337</td><td class="num">3,003</td><td class="num down">△334</td><td class="num down">△10.0%</td></tr>
+        <tr><td>수탁연구비 (자체)</td><td class="num">6,113</td><td class="num">4,847</td><td class="num down">△1,266</td><td class="num down">△20.7%</td></tr>
+        <tr><td>개별출연사업비 (기금)</td><td class="num">5,621</td><td class="num">7,271</td><td class="num up">+1,650</td><td class="num up">+29.4%</td></tr>
+        <tr><td>인건비 (일반+자체)</td><td class="num">10,883</td><td class="num">11,265</td><td class="num up">+382</td><td class="num up">+3.5%</td></tr>
+        <tr><td>경상비</td><td class="num">1,911</td><td class="num">1,914</td><td class="num up">+3</td><td class="num up">+0.2%</td></tr>
+        <tr><td>예비비</td><td class="num">800</td><td class="num">800</td><td class="num">-</td><td class="num">0.0%</td></tr>
+        <tr><td>연구개발적립금</td><td class="num">433</td><td class="num">496</td><td class="num up">+63</td><td class="num up">+14.5%</td></tr>
+        <tr class="tot"><td>합계</td><td class="num">29,098</td><td class="num">29,596</td><td class="num up">+498</td><td class="num up">+1.7%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="sub">특정목적출연금사업 (개별출연)</h3>
+  <div class="tbl-wrap">
+    <table class="dt">
+      <thead><tr><th>사업명</th><th>소관 본부</th><th class="num">2025</th><th class="num">2026</th></tr></thead>
+      <tbody>
+        <tr><td>관광통계개선사업 (’23 전환)</td><td>데이터정책본부</td><td class="num">3,315</td><td class="num">3,215</td></tr>
+        <tr><td>외래관광객조사</td><td>데이터정책본부</td><td class="num">586</td><td class="num">586</td></tr>
+        <tr><td>걷기여행 환경영향지표 개발조사</td><td>데이터정책본부</td><td class="num">200</td><td class="num">200</td></tr>
+        <tr><td>관광숙박업기초통계조사</td><td>데이터정책본부</td><td class="num">100</td><td class="num">150</td></tr>
+        <tr><td>관광개발정보시스템(TDSS) 운영*</td><td>지역관광개발관리센터</td><td class="num">520</td><td class="num">547 (500)</td></tr>
+        <tr><td>광역관광개발 성과관리 및 컨설팅*</td><td>지역관광개발관리센터</td><td class="num">720</td><td class="num">992 (920)</td></tr>
+        <tr><td>관광숙박 수급분석</td><td>관광산업연구실</td><td class="num">100</td><td class="num">150</td></tr>
+        <tr><td>국제관광기구 의제 대응 및 발굴</td><td>관광정책연구실</td><td class="num">100</td><td class="num">100</td></tr>
+        <tr><td>문화영향평가 (수탁)</td><td>문화연구본부</td><td class="num">-</td><td class="num">1,450</td></tr>
+        <tr class="tot"><td>합계</td><td></td><td class="num">5,641</td><td class="num">7,390</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="caption">* 전년도 이월금액 포함, 괄호 안은 금년 교부 금액</div>
+</section>
+
+<!-- ============ RESEARCH ============ -->
+<section id="research" class="panel">
+  <h2 class="sec-title"><span class="num">Ⅰ</span> 주요 연구 및 사업</h2>
+
+  <div class="kpi-grid">
+    <div class="kpi k1"><div class="lbl">기본연구</div><div class="val">39건</div><div class="sub">기초6+정책24+수시9</div></div>
+    <div class="kpi k2"><div class="lbl">기타연구</div><div class="val">20건</div><div class="sub">현안·정책리포트·특별 등</div></div>
+    <div class="kpi k3"><div class="lbl">계약(수탁)</div><div class="val">약 60건</div><div class="sub">정부·지자체·공기업</div></div>
+    <div class="kpi k4"><div class="lbl">개별출연(보조)</div><div class="val">9건</div><div class="sub">국고·기금보조금</div></div>
+  </div>
+
+  <div class="card">
+    <h4>기본연구사업 구조</h4>
+    <div class="tbl-wrap">
+      <table class="dt">
+        <thead><tr><th>구분</th><th>내용</th><th class="num">건수</th><th class="num">기간</th><th class="num">과제당 예산</th></tr></thead>
+        <tbody>
+          <tr><td>기초연구</td><td>중장기 정책의제 발굴 (탐색적)</td><td class="num">6</td><td class="num">10개월</td><td class="num">2,400만 원</td></tr>
+          <tr><td>정책연구</td><td>정부·지자체 정책방향 제시</td><td class="num">24</td><td class="num">8개월</td><td class="num">2,000만 원</td></tr>
+          <tr><td>수시연구</td><td>정책수요·환경변화 대응</td><td class="num">9</td><td class="num">5개월</td><td class="num">1,000만 원</td></tr>
+          <tr><td>현안연구</td><td>단기 대응 (조사·법률분석)</td><td class="num">11</td><td class="num">3개월</td><td class="num">800만 원</td></tr>
+          <tr><td>정책리포트</td><td>초기 정책이슈 자료</td><td class="num">8</td><td class="num">1개월</td><td class="num">150만 원</td></tr>
+          <tr><td>협력연구</td><td>타기관 공동연구</td><td class="num">1</td><td class="num">-</td><td class="num">외부(수탁)</td></tr>
+          <tr><td>특별연구</td><td>임금피크제 대상 수행</td><td class="num">1</td><td class="num">5개월</td><td class="num">500만 원</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="caption">과제당 예산: 기초 3,000→2,400만원(’23→’26), 정책 2,500→2,000만원, 수시 1,250→1,000만원 (지속 감소)</div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h4>과제당 예산 추이 (’23~’26)</h4>
+      <div class="chart-box"><canvas id="perProjChart"></canvas></div>
+      <div class="caption">단위: 만 원 · 기초·정책·수시 연구</div>
+    </div>
+    <div class="card">
+      <h4>연구관련·지원사업</h4>
+      <p><b>정책토론</b>: 국내·국제협력, 정책세미나 (문화·관광·콘텐츠·데이터 네트워크)</p>
+      <p><b>간행물</b>: 문화정책논총(KCI등재), 한국관광정책(계간), KCTI 인사이트</p>
+      <p><b>데이터분석</b>: 동향분석(북한관광·국제관광·관광산업·콘텐츠·데이터), 국제관광수요예측, 공공데이터 운영</p>
+      <p><b>연구지원</b>: 관광지식정보시스템, 문화예술지식정보시스템, 연구원 통합관리시스템</p>
+    </div>
+  </div>
+
+  <h3 class="sub">공공기관 혁신</h3>
+  <div class="grid-2">
+    <div class="card">
+      <h4>유형별 계획</h4>
+      <div class="chips">
+        <span class="chip">기능조정 - 해당없음</span>
+        <span class="chip ok">정·현원차 축소 (’23 完)</span>
+        <span class="chip ok">정보사업팀 신설</span>
+        <span class="chip">국정과제 법령 - 해당없음</span>
+      </div>
+    </div>
+    <div class="card">
+      <h4>경상경비 효율화 · 복리후생</h4>
+      <p><span class="chip ok">‘22 경상경비/업무추진비 10% 감축 (完)</span></p>
+      <p><span class="chip ok">‘23 경상경비/업무추진비 3% 감축 (完)</span></p>
+      <p><span class="chip ok">복리후생 개선 9건 (’22~’24 시행 完)</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ STATS ============ -->
+<section id="stats" class="panel">
+  <h2 class="sec-title"><span class="num">Ⅰ</span> 통계 생산 및 정책평가</h2>
+
+  <div class="card">
+    <h4>국가승인통계 9종</h4>
+    <div class="tbl-wrap">
+      <table class="dt">
+        <thead><tr><th>분야</th><th>통계명</th><th>근거</th></tr></thead>
+        <tbody>
+          <tr><td rowspan="4">관광 (4)</td><td>국민여행조사</td><td rowspan="4">「관광진흥법」 제47조의2</td></tr>
+          <tr><td>관광산업조사</td></tr>
+          <tr><td>외래관광객조사</td></tr>
+          <tr><td>주요관광지점 입장객통계</td></tr>
+          <tr><td rowspan="2">종합 (2)</td><td>문화체육관광산업통계</td><td>연구원 승인통계</td></tr>
+          <tr><td>문화체육관광 일자리현황조사</td><td>「통계법」 제18조</td></tr>
+          <tr><td rowspan="3">문화 (3)</td><td>국민문화예술활동조사</td><td>「문화기본법」 제11조</td></tr>
+          <tr><td>국민여가활동조사</td><td rowspan="2">「국민여가활성화기본법」 제8조</td></tr>
+          <tr><td>근로자휴가조사</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="caption">문체부 승인통계 8종 + 연구원 승인통계 1종</div>
+  </div>
+
+  <div class="card">
+    <h4>정책사업 평가</h4>
+    <div class="tbl-wrap">
+      <table class="dt">
+        <thead><tr><th>분야</th><th>평가명</th><th>근거</th></tr></thead>
+        <tbody>
+          <tr><td>문화</td><td>문화영향평가</td><td>문화기본법 제9조의4 · 시행령 제6조의4<br><small>지정기간 2026.3.26.~2029.3.25.</small></td></tr>
+          <tr><td rowspan="2">관광</td><td>관광특구평가</td><td>관광진흥법 시행령 제58조의2<br><small>전문기관: 한국문화관광연구원</small></td></tr>
+          <tr><td>지역관광개발사업평가</td><td>관광진흥법 시행령 협의 진행 中(하반기)<br><small>제76조의3 신설 원안 가결 (2026.3.31)</small></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ISSUES ============ -->
+<section id="issues" class="panel">
+  <h2 class="sec-title"><span class="num">Ⅱ</span> 2026 주요 현안 (국정감사 핵심)</h2>
+
+  <div class="issue">
+    <h4><span class="badge">현안 ①</span> 인력 및 예산 규모 개편</h4>
+    <p style="margin-top:4px"><b>연구·평가사업 규모 확대에 따른 인력증원 필요</b></p>
+    <ul>
+      <li>정책연구(현안) 수요 급증, 속보성 통계 생산, 정책평가 강화로 <span class="hi">연구·사업비 규모는 지속 확대</span></li>
+      <li>이를 수행할 <span class="down">인력 증원은 정체 상태</span></li>
+      <li>「문화예술진흥법」 전부 개정 시 부여되는 <b>‘문화예술진흥기금 지원사업 성과평가’</b> 위탁업무 담당 인력 충원 필요</li>
+    </ul>
+    <p style="margin-top:8px"><b>출연금 예산 비중 확대 필요</b></p>
+    <ul>
+      <li>안정적인 기관 운영과 우수 인력 유지를 위해 사업 규모에 맞는 예산구조 개편 필요</li>
+      <li>2010년 인건비 <b>81.8%</b>, 경상비 <b>75.0%</b> 지원 → ’26년 <span class="down">70.0%, 56.1%</span>로 지속 하락</li>
+      <li>인건비·경상비 자체예산 충당을 위한 <b>수탁용역 업무 가중</b>으로 정책연구·지원 기능 약화 지속</li>
+    </ul>
+    <div class="chart-box tall" style="margin-top:12px"><canvas id="supportRateChart"></canvas></div>
+    <div class="caption">한국문화관광연구원 인건비·경상비 문체부 출연금 지원율 추이 (2010~2026)</div>
+  </div>
+
+  <div class="issue i2">
+    <h4><span class="badge">현안 ②</span> 지방이전에 따른 종합 대책</h4>
+    <p><b>공공기관 지방이전 2차 대상</b></p>
+    <ul>
+      <li>2차 공공기관 이전 실행지원 용역 진행 (국토부 3.8억원 / ’25.11.6 ~ ’26.11.1)</li>
+      <li>’25.11.20 2차 공공기관 이전 전수조사 제출<br>
+        <small>일반현황(조직·예산), 주요업무(본부·부설), 임직원, 사옥·부지, 재무</small>
+      </li>
+    </ul>
+    <p><b>필요 대책</b></p>
+    <ul>
+      <li>지방 이전으로 인한 <span class="down">신규 청사 마련(임차)·대규모 이전 비용 발생</span> → 재무적 부담</li>
+      <li>생활 기반 변화로 <span class="down">연구·사업 인력 이탈 심화</span> 및 잔류 인력 업무 가중·공백 우려</li>
+      <li>인력 이탈 최소화를 위한 <b>인센티브 도입 필요</b> (주거지원·복무여건 유연화 등)</li>
+    </ul>
+  </div>
+
+  <div class="issue i3">
+    <h4><span class="badge">현안 ③</span> 정보화 인력 증원</h4>
+    <ul>
+      <li>대통령 지시(‘26.5.12.) <b>‘개인정보·데이터 관리 전담 인력 확보’</b>에 따른 전문인력 보강 필요</li>
+      <li>지시사항 이행을 위해 <b>정보사업팀 신설(’26.7.3.)</b> 하였으나 <span class="down">별도 전담인력 미확보</span> (기존 담당인력 일부 재배치)</li>
+      <li>기관 특성상 타 부서 인력(연구·통계직) 재배치 어려우며, <span class="down">’20년 이후 6년간 정보화 전문인력 충원 전무</span></li>
+    </ul>
+  </div>
+
+</section>
+
+<!-- ============ PROJECTS ============ -->
+<section id="projects" class="panel">
+  <h2 class="sec-title"><span class="num">🔖</span> 2026년 기본연구과제 (39건)</h2>
+
+  <div class="search-bar">
+    <input type="search" id="projSearch" placeholder="🔍 과제명 검색 (예: AI, 관광, 콘텐츠…)">
+  </div>
+  <div class="filter-chips" style="margin-bottom:12px">
+    <button class="fchip active" data-f="all">전체 <span>39</span></button>
+    <button class="fchip" data-f="문화">문화 <span>14</span></button>
+    <button class="fchip" data-f="관광">관광 <span>16</span></button>
+    <button class="fchip" data-f="콘텐츠">콘텐츠 <span>6</span></button>
+    <button class="fchip" data-f="데이터">데이터 <span>3</span></button>
+    <button class="fchip" data-f="기초">기초연구</button>
+    <button class="fchip" data-f="정책">정책연구</button>
+    <button class="fchip" data-f="수시">수시연구</button>
+  </div>
+
+  <div class="tbl-wrap">
+    <table class="dt" id="projTable">
+      <thead><tr><th style="width:44px">#</th><th>구분</th><th>과제명</th><th>분야</th></tr></thead>
+      <tbody id="projBody"></tbody>
+    </table>
+  </div>
+  <div class="caption" id="projCount"></div>
+</section>
+
+<!-- ============ COMPARE ============ -->
+<section id="comp" class="panel">
+  <h2 class="sec-title"><span class="num">Ⅱ</span> 정부출연연 비교 (2026)</h2>
+
+  <div class="card">
+    <h4>기관별 인건비·경상비 출연금 지원율</h4>
+    <div class="chart-box tall"><canvas id="compChart"></canvas></div>
+    <div class="caption">알리오 공시 기준 · 2026년 예산 · 성과급/능률성과급 포함(해당 시)</div>
+  </div>
+
+  <div class="tbl-wrap">
+    <table class="dt">
+      <thead>
+        <tr><th>기관명</th><th class="num">정원</th><th class="num">인건비</th><th class="num">인건비 지원율 (’26)</th><th class="num">경상비 (예산)</th><th class="num">경상비 지원율 (’26)</th></tr>
+      </thead>
+      <tbody>
+        <tr style="background:#fff5eb"><td><b>한국문화관광연구원</b></td><td class="num">139</td><td class="num">12,065</td><td class="num down"><b>70.0%</b></td><td class="num">1,914</td><td class="num down"><b>56.1%</b></td></tr>
+        <tr class="tot"><td>10개 연구기관 평균</td><td class="num">194</td><td class="num">18,177</td><td class="num up"><b>96.6%</b></td><td class="num">2,908</td><td class="num up"><b>94.4%</b></td></tr>
+        <tr><td>국토연구원</td><td class="num">276</td><td class="num">25,365</td><td class="num">96.9%</td><td class="num">2,204</td><td class="num">92.2%</td></tr>
+        <tr><td>대외경제정책연구원</td><td class="num">215</td><td class="num">19,847</td><td class="num">99.2%</td><td class="num">3,937</td><td class="num">96.0%</td></tr>
+        <tr><td>통일연구원</td><td class="num">98</td><td class="num">9,160</td><td class="num">88.9%</td><td class="num">1,354</td><td class="num">97.6%</td></tr>
+        <tr><td>한국교통연구원</td><td class="num">243</td><td class="num">23,987</td><td class="num">92.4%</td><td class="num">6,584</td><td class="num">74.6%</td></tr>
+        <tr><td>한국노동연구원</td><td class="num">148</td><td class="num">13,619</td><td class="num">100.0%</td><td class="num">2,855</td><td class="num">96.4%</td></tr>
+        <tr><td>한국농촌경제연구원</td><td class="num">164</td><td class="num">16,726</td><td class="num">98.4%</td><td class="num">1,665</td><td class="num">99.2%</td></tr>
+        <tr><td>한국보건사회연구원</td><td class="num">209</td><td class="num">19,335</td><td class="num">99.8%</td><td class="num">4,057</td><td class="num">96.9%</td></tr>
+        <tr><td>한국조세재정연구원</td><td class="num">365</td><td class="num">34,108</td><td class="num">100.0%</td><td class="num">2,375</td><td class="num">100.0%</td></tr>
+        <tr><td>한국행정연구원</td><td class="num">117</td><td class="num">10,258</td><td class="num">96.6%</td><td class="num">1,682</td><td class="num">91.6%</td></tr>
+        <tr><td>한국형사·법무정책연구원</td><td class="num">104</td><td class="num">9,368</td><td class="num">94.0%</td><td class="num">2,368</td><td class="num">99.8%</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="caption">단위: 명, 백만 원, % · 정원은 상임임원(기관장) 포함, 별도정원 제외</div>
+
+  <div class="card" style="border-left:5px solid var(--accent);margin-top:12px">
+    <h4>핵심 시사점</h4>
+    <ul style="margin:0;padding-left:20px;font-size:13.5px;color:var(--ink-2);line-height:1.7">
+      <li>10개 정출연 평균 인건비 지원율 <b>96.6%</b> vs. 한국문화관광연구원 <span class="down"><b>70.0%</b></span> (26.6%p 격차)</li>
+      <li>10개 정출연 평균 경상비 지원율 <b>94.4%</b> vs. 한국문화관광연구원 <span class="down"><b>56.1%</b></span> (38.3%p 격차)</li>
+      <li>경인사회 소속 정출연은 <b>PBS 폐지 및 출연금 비중 확대</b>로 안정적 연구환경 조성</li>
+      <li>연구원은 수탁용역 의존도 심화 → 정책연구·지원 기능 약화 지속</li>
+    </ul>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="fa">
+    <a href="https://www.kcti.re.kr" target="_blank" rel="noopener" class="foot-link">
+      한국문화관광연구원 · Korea Culture &amp; Tourism Institute
+    </a>
+  </div>
+  <div>2026년 국정감사 대비 · KCTI 경영기획본부</div>
+</footer>
+
+<script>
+/* ============ Tab switching ============ */
+document.querySelectorAll('.tab').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    const id = btn.dataset.t;
+    document.getElementById(id).classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+});
+
+/* ============ Chart defaults ============ */
+Chart.defaults.font.family = "'Noto Sans KR', system-ui, sans-serif";
+Chart.defaults.color = '#334155';
+Chart.defaults.plugins.legend.labels.usePointStyle = true;
+Chart.defaults.plugins.legend.labels.padding = 12;
+Chart.defaults.plugins.legend.labels.font = { size: 11.5 };
+
+const BRAND='#0b3d91', BRAND2='#1660d6', ACC='#e11d48', ACC2='#f59e0b', OK='#059669', PURPLE='#7c3aed', TEAL='#0d9488';
+
+/* Budget trend */
+new Chart(document.getElementById('budgetTrend'),{
+  type:'bar',
+  data:{
+    labels:['2021','2022','2023','2024','2025','2026'],
+    datasets:[
+      {label:'출연금/일반회계',data:[12311,12519,12195,12389,12570,12522],backgroundColor:BRAND,stack:'a'},
+      {label:'자체수입',data:[15741,16645,16717,16177,16528,17074],backgroundColor:ACC2,stack:'a'},
+    ]
+  },
+  options:{
+    maintainAspectRatio:false,responsive:true,
+    plugins:{tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.parsed.y.toLocaleString()+' 백만원'}}},
+    scales:{
+      x:{stacked:true,grid:{display:false}},
+      y:{stacked:true,ticks:{callback:v=>(v/1000).toFixed(0)+'억'}}
+    }
+  }
+});
+
+/* Peak chart */
+new Chart(document.getElementById('peakChart'),{
+  type:'bar',
+  data:{
+    labels:['2024','2025','2026','2027','2028','2029','2030'],
+    datasets:[
+      {label:'대상자',data:[1,1,3,4,2,2,3],backgroundColor:BRAND2,borderRadius:6},
+      {label:'2년 누적',data:[1,2,4,7,6,4,5],type:'line',borderColor:ACC,backgroundColor:'rgba(225,29,72,.1)',tension:.35,pointRadius:4,fill:false,borderWidth:2.5}
+    ]
+  },
+  options:{maintainAspectRatio:false,responsive:true,scales:{y:{beginAtZero:true,ticks:{stepSize:1}}}}
+});
+
+/* Income pie */
+new Chart(document.getElementById('incomeChart'),{
+  type:'doughnut',
+  data:{
+    labels:['일반회계 (출연금)','수탁연구','개별출연사업','전년도 이월금','연구개발적립금'],
+    datasets:[{data:[12522,8025,7271,1282,496],backgroundColor:[BRAND,ACC2,BRAND2,PURPLE,OK],borderWidth:2,borderColor:'#fff'}]
+  },
+  options:{
+    maintainAspectRatio:false,responsive:true,cutout:'55%',
+    plugins:{tooltip:{callbacks:{label:c=>c.label+': '+c.parsed.toLocaleString()+' 백만원 ('+((c.parsed/29596)*100).toFixed(1)+'%)'}}}
+  }
+});
+
+/* Expense pie */
+new Chart(document.getElementById('expenseChart'),{
+  type:'doughnut',
+  data:{
+    labels:['인건비','개별출연사업비','수탁연구비','연구사업비','경상비','예비비','연구개발적립금'],
+    datasets:[{data:[11265,7271,4847,3003,1914,800,496],backgroundColor:[BRAND,BRAND2,ACC2,OK,PURPLE,'#94a3b8',TEAL],borderWidth:2,borderColor:'#fff'}]
+  },
+  options:{
+    maintainAspectRatio:false,responsive:true,cutout:'55%',
+    plugins:{tooltip:{callbacks:{label:c=>c.label+': '+c.parsed.toLocaleString()+' 백만원 ('+((c.parsed/29596)*100).toFixed(1)+'%)'}}}
+  }
+});
+
+/* Per-project budget trend */
+new Chart(document.getElementById('perProjChart'),{
+  type:'line',
+  data:{
+    labels:['2023','2024','2025','2026'],
+    datasets:[
+      {label:'기초연구',data:[3000,2700,2700,2400],borderColor:BRAND,backgroundColor:'rgba(11,61,145,.08)',fill:true,tension:.35,borderWidth:2.5,pointRadius:4},
+      {label:'정책연구',data:[2500,2250,2250,2000],borderColor:ACC2,backgroundColor:'rgba(245,158,11,.08)',fill:true,tension:.35,borderWidth:2.5,pointRadius:4},
+      {label:'수시연구',data:[1250,1200,1200,1000],borderColor:OK,backgroundColor:'rgba(5,150,105,.08)',fill:true,tension:.35,borderWidth:2.5,pointRadius:4}
+    ]
+  },
+  options:{
+    maintainAspectRatio:false,responsive:true,
+    plugins:{tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.parsed.y.toLocaleString()+'만원'}}},
+    scales:{y:{beginAtZero:false,ticks:{callback:v=>v.toLocaleString()+'만'}}}
+  }
+});
+
+/* Support rate trend */
+const yrs=['2010','’11','’12','’13','’14','’15','’16','’17','’18','’19','’20','’21','’22','’23','’24','’25','’26'];
+new Chart(document.getElementById('supportRateChart'),{
+  type:'line',
+  data:{
+    labels:yrs,
+    datasets:[
+      {label:'인건비 지원율(%)',data:[81.8,78.6,75.7,76.7,77.3,72.4,70.8,71.3,69.2,70.9,71.4,72.3,70.7,70.1,70.2,69.8,70.0],borderColor:BRAND,backgroundColor:'rgba(11,61,145,.08)',fill:true,tension:.3,borderWidth:2.5,pointRadius:3},
+      {label:'경상비 지원율(%)',data:[75.0,75.7,75.7,77.9,77.9,72.8,55.0,56.2,56.2,56.2,52.1,57.4,57.4,59.2,59.2,56.2,56.1],borderColor:ACC,backgroundColor:'rgba(225,29,72,.08)',fill:true,tension:.3,borderWidth:2.5,pointRadius:3}
+    ]
+  },
+  options:{
+    maintainAspectRatio:false,responsive:true,
+    plugins:{tooltip:{mode:'index',intersect:false}},
+    scales:{y:{min:40,max:90,ticks:{callback:v=>v+'%'}}}
+  }
+});
+
+/* Compare chart */
+const compLabels=['한국문화관광\n연구원','국토연','대외경제','통일연','교통연','노동연','농촌경제','보건사회','조세재정','행정연','형사법무'];
+new Chart(document.getElementById('compChart'),{
+  type:'bar',
+  data:{
+    labels:compLabels,
+    datasets:[
+      {label:'인건비 지원율(%)',data:[70.0,96.9,99.2,88.9,92.4,100.0,98.4,99.8,100.0,96.6,94.0],backgroundColor:BRAND},
+      {label:'경상비 지원율(%)',data:[56.1,92.2,96.0,97.6,74.6,96.4,99.2,96.9,100.0,91.6,99.8],backgroundColor:ACC2}
+    ]
+  },
+  options:{
+    maintainAspectRatio:false,responsive:true,indexAxis:'y',
+    plugins:{tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.parsed.x+'%'}}},
+    scales:{x:{beginAtZero:true,max:110,ticks:{callback:v=>v+'%'}}}
+  }
+});
+
+/* ============ 2026 Projects data ============ */
+const projects=[
+  // 기초연구 6
+  ['기초','국제사회 의제 기반 문화정책의 중장기 발전 방향 모색','문화'],
+  ['기초','환경변화에 대응한 문화분야 전문인력 양성 방향','문화'],
+  ['기초','인구구조 변화와 기술혁신에 따른 관광노동시장 분석 및 대응방안','관광'],
+  ['기초','인공지능(AI) 시대 관광산업 생태계 변화와 대응 방안 연구','관광'],
+  ['기초','한류 트렌드 분석과 전망','콘텐츠'],
+  ['기초','문화·관광 조사통계의 AI 합성데이터 생산 방안 연구','데이터'],
+  // 정책연구 24
+  ['정책','공연예술 분야 표준계약서 활용현황 및 개선방안 연구','문화'],
+  ['정책','문화권 지표 개발 및 활용 방안 연구','문화'],
+  ['정책','문화정책 관점에서 지역균형성장의 의미와 성과관리전략','문화'],
+  ['정책','문화치유정책 활성화를 위한 전문인력 기반 구축 연구','문화'],
+  ['정책','박물관·미술관 정책구조의 재편방안 연구: 중앙-지방 정책기능 재분배 중심','문화'],
+  ['정책','공공도서관의 친환경·탄소중립 기반 재생 방향 연구','문화'],
+  ['정책','문화예술진흥기금 운영관리 개선방안 연구','문화'],
+  ['정책','문화참여의 주관적 웰빙(SWB) 가치측정과 정책활용 방안','문화'],
+  ['정책','지역 공연예술 창·제작 생태계 지원 개선방안 연구','문화'],
+  ['정책','방한 외래관광객 유입의 지역 경제 효과 분석','관광'],
+  ['정책','방한 중국관광시장 분석 및 정책방향','관광'],
+  ['정책','일본의 인바운드 관광 정책 심층 분석','관광'],
+  ['정책','항공 접근성 변화가 지역 인바운드 관광수요에 미치는 영향','관광'],
+  ['정책','K-뷰티 관광 현황 및 정책 추진 방안','관광'],
+  ['정책','5극3특 국가균형성장전략과 초광역권 관광정책방향','관광'],
+  ['정책','관광단지 민간투자 활성화를 위한 정책방안','관광'],
+  ['정책','신관광산업의 동향과 정책 대응 방안','관광'],
+  ['정책','지역 간 연계 협력 관광사업 실태와 활성화 방안','관광'],
+  ['정책','지역관광산업 활성화를 위한 관광기념품 육성 방안','관광'],
+  ['정책','한국 카지노산업의 기업 경영 특성 분석과 정책 방향','관광'],
+  ['정책','애니메이션 기획개발 지원 고도화 방안 연구','콘텐츠'],
+  ['정책','콘텐츠 정책펀드 구조 개선방안 연구','콘텐츠'],
+  ['정책','K-콘텐츠 주도형 글로벌 신흥시장 진출 방안 연구','콘텐츠'],
+  ['정책','문화·관광·콘텐츠 AI-Ready 데이터 정책 연구','데이터'],
+  // 수시연구 9
+  ['수시','문화유산 원형과 현대적 상징성의 공존을 위한 문화정책 방향','문화'],
+  ['수시','예술인 복지정책 대상 기준 설정 연구: 해외사례 중심','문화'],
+  ['수시','문화가 있는 날 민간 참여 활성화를 위한 세제지원 방안','문화'],
+  ['수시','관광숙박업 외국인력 고용 여건 개선 방안','관광'],
+  ['수시','환율·유가의 변동성 확대와 방한관광 수요 영향','관광'],
+  ['수시','지역관광발전지수 표준모델 고도화 방안','관광'],
+  ['수시','문화 분야 AI 전환을 위한 정책 방향','콘텐츠'],
+  ['수시','영상콘텐츠산업 환경변화와 제도적 대응방안','콘텐츠'],
+  ['수시','주요 거시지표의 변화에 따른 문화관광 소비행태 변화 분석: 대내외 경제 충격 사례 중심','데이터'],
+];
+
+const catColor = {'문화':'#7c3aed','관광':'#0d9488','콘텐츠':'#e11d48','데이터':'#1660d6'};
+const typeColor = {'기초':'#0b3d91','정책':'#f59e0b','수시':'#059669'};
+
+function renderProjects(filter='all', kw=''){
+  const body = document.getElementById('projBody');
+  body.innerHTML='';
+  let count=0;
+  projects.forEach((p,i)=>{
+    const [type,name,cat]=p;
+    let ok=true;
+    if(filter!=='all'){
+      if(['문화','관광','콘텐츠','데이터'].includes(filter)) ok = cat===filter;
+      else if(['기초','정책','수시'].includes(filter)) ok = type===filter;
+    }
+    if(ok && kw){
+      const q = kw.toLowerCase();
+      ok = name.toLowerCase().includes(q) || cat.toLowerCase().includes(q) || type.toLowerCase().includes(q);
+    }
+    if(!ok) return;
+    count++;
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td class="num">${i+1}</td>
+      <td><span style="display:inline-block;padding:2px 8px;background:${typeColor[type]};color:#fff;border-radius:4px;font-size:11px;font-weight:700">${type}</span></td>
+      <td style="white-space:normal">${name}</td>
+      <td><span style="display:inline-block;padding:2px 8px;background:${catColor[cat]}22;color:${catColor[cat]};border-radius:4px;font-size:11px;font-weight:700">${cat}</span></td>
+    `;
+    body.appendChild(tr);
+  });
+  document.getElementById('projCount').textContent = `총 ${count}건 표시`;
+}
+renderProjects();
+
+document.querySelectorAll('.fchip').forEach(chip=>{
+  chip.addEventListener('click',()=>{
+    document.querySelectorAll('.fchip').forEach(c=>c.classList.remove('active'));
+    chip.classList.add('active');
+    renderProjects(chip.dataset.f, document.getElementById('projSearch').value.trim());
+  });
+});
+document.getElementById('projSearch').addEventListener('input',e=>{
+  const active = document.querySelector('.fchip.active');
+  renderProjects(active?active.dataset.f:'all', e.target.value.trim());
+});
+</script>
+</body>
+</html>
