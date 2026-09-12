@@ -2,9 +2,29 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
 <meta name="theme-color" content="#0b3d91" />
-<title>한국문화관광연구원 · 2026 국정감사 대시보드</title>
+<title>KCTI 2026 국정감사 대시보드</title>
+
+<!-- PWA (Progressive Web App) -->
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
+
+<!-- iOS 홈 화면 추가 -->
+<link rel="apple-touch-icon" href="apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="KCTI 2026" />
+
+<!-- Android/Chrome -->
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="application-name" content="KCTI 2026" />
+
+<!-- MS Tiles -->
+<meta name="msapplication-TileColor" content="#0b3d91" />
+<meta name="msapplication-TileImage" content="icon-192.png" />
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -29,6 +49,11 @@
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:'Noto Sans KR',system-ui,-apple-system,'Apple SD Gothic Neo',sans-serif;line-height:1.55;-webkit-text-size-adjust:100%;}
+  /* iOS PWA standalone 모드에서 노치·홈바 safe-area 대응 */
+  @supports(padding: max(0px)){
+    header.top{padding-top:env(safe-area-inset-top);padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right)}
+    footer{padding-bottom:calc(20px + env(safe-area-inset-bottom))}
+  }
   a{color:var(--brand-2);text-decoration:none}
   a:hover{text-decoration:underline}
 
@@ -268,6 +293,14 @@
     </div>
     <div class="top-actions">
       <div class="top-meta">2026.10 기준</div>
+      <button id="installBtn" class="btn-pdf btn-install" type="button" title="홈 화면에 앱으로 설치" aria-label="앱 설치" style="display:none">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="5" y="2" width="14" height="20" rx="2"/>
+          <line x1="12" y1="18" x2="12.01" y2="18"/>
+        </svg>
+        <span class="lbl-full">앱 설치</span>
+        <span class="lbl-short">설치</span>
+      </button>
       <a class="btn-pdf" href="KCTI_2026_국정감사.pdf" download="한국문화관광연구원_2026_국정감사.pdf" title="원문 PDF 다운로드" aria-label="원문 PDF 다운로드">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
@@ -1002,6 +1035,74 @@ document.getElementById('projSearch').addEventListener('input',e=>{
   const active = document.querySelector('.fchip.active');
   renderProjects(active?active.dataset.f:'all', e.target.value.trim());
 });
+
+/* ============ PWA: Service Worker 등록 ============ */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').then(reg => {
+      console.log('[PWA] SW registered:', reg.scope);
+    }).catch(err => console.warn('[PWA] SW failed:', err));
+  });
+}
+
+/* ============ PWA: 앱 설치 프롬프트 ============ */
+let deferredInstall = null;
+const installBtn = document.getElementById('installBtn');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredInstall = e;
+  if (installBtn) installBtn.style.display = 'inline-flex';
+});
+
+if (installBtn) {
+  installBtn.addEventListener('click', async () => {
+    if (!deferredInstall) return;
+    installBtn.style.display = 'none';
+    deferredInstall.prompt();
+    const { outcome } = await deferredInstall.userChoice;
+    console.log('[PWA] install outcome:', outcome);
+    deferredInstall = null;
+  });
+}
+
+window.addEventListener('appinstalled', () => {
+  if (installBtn) installBtn.style.display = 'none';
+  console.log('[PWA] app installed');
+});
+
+/* iOS: 사파리는 beforeinstallprompt 미지원 → "홈 화면 추가" 안내 배너 */
+(function(){
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+  const dismissed = sessionStorage.getItem('kcti_ios_dismiss');
+  if (isIOS && !isStandalone && !dismissed) {
+    const banner = document.createElement('div');
+    banner.id = 'iosInstallBanner';
+    banner.innerHTML = `
+      <div style="flex:1;font-size:12.5px;line-height:1.5">
+        <b>📱 앱처럼 설치하기</b><br>
+        <span style="opacity:.9">사파리 하단 공유 버튼 <b>⬆︎</b> → <b>홈 화면에 추가</b></span>
+      </div>
+      <button id="iosBannerClose" aria-label="닫기"
+        style="background:transparent;border:none;color:#fff;font-size:20px;padding:4px 10px;cursor:pointer;font-family:inherit">×</button>
+    `;
+    banner.style.cssText = `
+      position:fixed;left:12px;right:12px;bottom:12px;z-index:100;
+      background:linear-gradient(135deg,#0b3d91,#1660d6);color:#fff;
+      border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:8px;
+      box-shadow:0 10px 25px rgba(11,61,145,.35);animation:slideUp .35s ease;
+    `;
+    const style = document.createElement('style');
+    style.textContent = '@keyframes slideUp{from{transform:translateY(120%);opacity:0}to{transform:translateY(0);opacity:1}}';
+    document.head.appendChild(style);
+    document.body.appendChild(banner);
+    document.getElementById('iosBannerClose').addEventListener('click', () => {
+      banner.remove();
+      sessionStorage.setItem('kcti_ios_dismiss','1');
+    });
+  }
+})();
 </script>
 </body>
 </html>
